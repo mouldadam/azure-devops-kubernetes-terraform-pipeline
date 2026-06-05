@@ -20,6 +20,11 @@ steps:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
     commandOptions: '-var client_id-$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(ssh_public_key)'
+    backendServiceArm: 'azure-resource-service-connection'
+    backendAzureRmResourceGroupName: 'dockerkubernetesadam'
+    backendAzureRmStorageAccountName: 'storagedockerkubernetesadam'
+    backendAzureRmContainerName: 'storagecontainerdockerkubernetesadam'
+    backendAzureRmKey: 'kubernetes-dev.tfstate'
 - task: DownloadSecureFile@1
   inputs:
     secureFile: 'azure_rsa.pub'
