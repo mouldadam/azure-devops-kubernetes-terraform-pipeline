@@ -6,12 +6,14 @@ pool:
   vmImage: ubuntu-latest
 
 
+
+steps:
+- script: echo k8s terraform azure!
+
 - task: DownloadSecureFile@1
   inputs:
     secureFile: 'azure_rsa.pub'
 
-steps:
-- script: echo k8s terraform azure!
 - task: TerraformTask@5
   inputs:
     provider: 'azurerm'
