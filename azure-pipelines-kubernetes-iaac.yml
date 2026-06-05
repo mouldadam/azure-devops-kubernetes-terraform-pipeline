@@ -9,7 +9,9 @@ pool:
 
 steps:
 - script: echo k8s terraform azure!
-
+- task: TerraformInstaller@1
+  inputs:
+    terraformVersion: '1.6.6'
 - task: DownloadSecureFile@1
   inputs:
     secureFile: 'azure_rsa.pub'
