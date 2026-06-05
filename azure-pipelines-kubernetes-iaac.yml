@@ -16,17 +16,35 @@ steps:
   inputs:
     secureFile: 'azure_rsa.pub'
 
-- task: TerraformTask@5
+- task: Bash@3
+  displayName: Terraform Init/Plan/Apply
   inputs:
-    provider: 'azurerm'
-    command: 'init'
+    targetType: inline
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    commandOptions: '-var client_id-$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(ssh_public_key)'
-    backendServiceArm: 'azure-resource-service-connection'
-    backendAzureRmResourceGroupName: 'dockerkubernetesadam'
-    backendAzureRmStorageAccountName: 'storagedockerkubernetesadam'
-    backendAzureRmContainerName: 'storagecontainerdockerkubernetesadam'
-    backendAzureRmKey: 'kubernetes-dev.tfstate'
+    script: |
+      set -e
+
+      echo "Terraform version:"
+      terraform version
+
+      echo "Initializing Terraform backend..."
+
+      terraform init \
+        -backend-config="resource_group_name=dockerkubernetesadam" \
+        -backend-config="storage_account_name=storagedockerkubernetesadam" \
+        -backend-config="container_name=storagecontainerdockerkubernetesadam" \
+        -backend-config="key=kubernetes-dev.tfstate" \
+        -backend-config="use_azuread_auth=true"
+
+      echo "Validating..."
+      terraform validate
+
+      echo "Planning..."
+      terraform plan \
+        -var "client_id=$(client_id)" \
+        -var "client_secret=$(client_secret)" \
+        -var "ssh_public_key=$(ssh_public_key)" \
+        -out=tfplan
 - task: DownloadSecureFile@1
   inputs:
     secureFile: 'azure_rsa.pub'
